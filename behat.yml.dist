@@ -1,0 +1,13 @@
+default:
+  suites:
+    default:
+      contexts:
+        - FeatureContext: ~
+  extensions:
+    MageTest\LegacyDriver: ~
+    SensioLabs\Behat\PageObjectExtension: ~
+    Behat\MinkExtension:
+      base_url: 'http://local.dev/'
+      sessions:
+        default:
+          magento2: ~

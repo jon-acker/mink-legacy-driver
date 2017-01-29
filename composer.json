@@ -1,0 +1,16 @@
+{
+    "name": "jacker/mink-legacy-driver",
+    "description": "Driver for Mink/Behat providing direct driver any php app",
+    "require": {
+        "behat/behat": "3",
+        "behat/mink-extension": "^2.2",
+        "phpspec/phpspec": "^3.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jon Acker",
+            "email": "jon.acker@worldfirst.com"
+        }
+    ]
+}

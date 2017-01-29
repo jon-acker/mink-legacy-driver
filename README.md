@@ -1,3 +1,2 @@
-# behat-m2-driver
-Behat Mink Driver for Magento2
+Behat Mink Driver for Legacy Applications
 # mink-legacy-driver
