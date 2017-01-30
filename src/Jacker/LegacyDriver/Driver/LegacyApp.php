@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class LegacuApp implements HttpKernelInterface
+class LegacyApp implements HttpKernelInterface
 {
     /**
      * @var Container
@@ -40,7 +40,7 @@ class LegacuApp implements HttpKernelInterface
         $_SERVER['REQUEST_METHOD'] = $request->getContentType();
         $_SERVER['CONTENT_TYPE'] = $request->getContentType();
         $_SERVER['HTTP_HOST'] = $request->getHttpHost();
-        $_SERVER['MAGE_MODE'] = 'developer';
+
         parse_str($_SERVER['QUERY_STRING'], $_GET);
 
         $contents = $this->runApplication();
@@ -66,28 +66,9 @@ class LegacuApp implements HttpKernelInterface
     private function runApplication()
     {
         ob_start();
-        define ('BP', './');
 
-        include BP . '/app/functions.php';
-        $composerAutoloader = include BP . "/vendor/autoload.php";
+        include './index.php';
 
-        AutoloaderRegistry::registerAutoloader(new ClassLoaderWrapper($composerAutoloader));
-
-        Bootstrap::populateAutoloader(BP, []);
-
-        $params = $_SERVER;
-
-        $params[Bootstrap::INIT_PARAM_FILESYSTEM_DIR_PATHS] = [
-            DirectoryList::PUB => [DirectoryList::URL_PATH => ''],
-            DirectoryList::MEDIA => [DirectoryList::URL_PATH => 'media'],
-            DirectoryList::STATIC_VIEW => [DirectoryList::URL_PATH => 'static'],
-            DirectoryList::UPLOAD => [DirectoryList::URL_PATH => 'media/upload'],
-        ];
-        $bootstrap = Bootstrap::create(BP, $params);
-//        /** @var \Magento\Framework\App\Http $app */
-        $app = $bootstrap->createApplication('Magento\Framework\App\Http');
-        $bootstrap->run($app);
-//
         $contents = ob_get_contents();
         ob_end_clean();
 

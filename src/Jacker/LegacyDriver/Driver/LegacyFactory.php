@@ -3,12 +3,13 @@
 namespace MageTest\LegacyDriver\Driver;
 
 use Behat\MinkExtension\ServiceContainer\Driver\DriverFactory;
+use Jacker\LegacyDriver\Driver\LegacyAppDriver;
 use MageTest\LegacyDriver\ServiceContainer\LegacyDriverExtension;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
-class Magento2Factory implements DriverFactory
+class LegacyFactory implements DriverFactory
 {
     /**
      * {@inheritdoc}
@@ -52,7 +53,7 @@ class Magento2Factory implements DriverFactory
             );
         }
         
-        return new Definition(MageAppDriver::class, array(
+        return new Definition(LegacyAppDriver::class, array(
             new Reference(LegacyDriverExtension::KERNEL_ID),
             '%mink.base_url%',
         ));

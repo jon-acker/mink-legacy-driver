@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="behat.magento2.test_client" class="Jacker\LegacyDriver\Client\TestClient">
-            <argument type="service" id="behat.legacy.driver.app"></argument>
+            <argument type="service" id="behat.legacy.driver.app"/>
         </service>
     </services>
 

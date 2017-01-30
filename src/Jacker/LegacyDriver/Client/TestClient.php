@@ -1,5 +1,5 @@
 <?php
-namespace MageTest\LegacyDriver\Client;
+namespace Jacker\LegacyDriver\Client;
 
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Request as HttpRequest;
@@ -10,7 +10,7 @@ use Symfony\Component\BrowserKit\Request as BrowserKitRequest;
 
 class TestClient extends Client
 {
-    const SERVICE_ID = 'behat.magento2.test_client';
+    const SERVICE_ID = 'behat.legacy.test_client';
     /**
      * @var HttpKernelInterface
      */

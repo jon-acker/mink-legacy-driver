@@ -5,8 +5,7 @@ namespace MageTest\LegacyDriver\ServiceContainer;
 use Behat\MinkExtension\ServiceContainer\MinkExtension;
 use Behat\Testwork\ServiceContainer\Extension;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
-use MageTest\LegacyDriver\Driver\MageApp;
-use MageTest\LegacyDriver\Driver\Magento2Factory;
+use Jacker\LegacyDriver\Driver\LegacyApp;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -16,9 +15,9 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class LegacyDriverExtension implements Extension
 {
     
-    const CONFIG_KEY = 'magento2driver';
+    const CONFIG_KEY = 'legacy_driver';
 
-    const KERNEL_ID = 'behat.magento2.driver.app';
+    const KERNEL_ID = 'behat.legacy.driver.app';
 
     private $magentoDriverFactory;
 
@@ -28,7 +27,7 @@ class LegacyDriverExtension implements Extension
     public function __construct()
     {
 
-        $this->magentoDriverFactory = new Magento2Factory();
+        $this->magentoDriverFactory = new LegacyFactory();
     }
 
     /**
@@ -65,6 +64,12 @@ class LegacyDriverExtension implements Extension
      */
     public function configure(ArrayNodeDefinition $builder)
     {
+        /**
+         * Add Some configuration options for example it would be useful
+         * to specify your apps entry point (index.php)
+         */
+
+
 //        $builder
 //            ->children()
 //                ->scalarNode(Config::CONFIG_KEY_MAGENTO_BOOTSTRAP_PATH)
@@ -103,7 +108,7 @@ class LegacyDriverExtension implements Extension
 
         $container->setDefinition(
             self::KERNEL_ID,
-            new Definition(MageApp::class, array($container))
+            new Definition(LegacyApp::class, array($container))
         );
     }
 }

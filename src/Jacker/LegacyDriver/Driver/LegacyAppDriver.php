@@ -1,11 +1,11 @@
 <?php
-namespace MageTest\LegacyDriver\Driver;
+namespace Jacker\LegacyDriver\Driver;
 
 use Behat\Mink\Driver\BrowserKitDriver;
-use MageTest\LegacyDriver\Client\TestClient;
+use Jacker\LegacyDriver\Client\TestClient;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class MageAppDriver extends BrowserKitDriver
+class LegacyAppDriver extends BrowserKitDriver
 {
     public function __construct(HttpKernelInterface $kernel, $baseUrl = null)
     {
