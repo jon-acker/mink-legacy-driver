@@ -1,6 +1,6 @@
 <?php
 
-namespace MageTest\LegacyDriver\Driver;
+namespace Jacker\LegacyDriver\Driver;
 
 use Behat\MinkExtension\ServiceContainer\Driver\DriverFactory;
 use Jacker\LegacyDriver\Driver\LegacyAppDriver;
