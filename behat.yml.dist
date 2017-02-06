@@ -4,9 +4,9 @@ default:
       contexts:
         - FeatureContext: ~
   extensions:
-    Jacker\LegacyDriver: ~
+    Jacker\LegacyDriver:
+      front_controller: web/index.php
     Behat\MinkExtension:
-      base_url: 'http://local.dev/'
       sessions:
         default:
           legacy: ~

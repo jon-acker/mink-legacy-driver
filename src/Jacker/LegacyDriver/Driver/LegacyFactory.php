@@ -3,8 +3,7 @@
 namespace Jacker\LegacyDriver\Driver;
 
 use Behat\MinkExtension\ServiceContainer\Driver\DriverFactory;
-use Jacker\LegacyDriver\Driver\LegacyAppDriver;
-use MageTest\LegacyDriver\ServiceContainer\LegacyDriverExtension;
+use Jacker\LegacyDriver\ServiceContainer\LegacyDriverExtension;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -16,7 +15,7 @@ class LegacyFactory implements DriverFactory
      */
     public function getDriverName()
     {
-        return 'magento2';
+        return 'legacy';
     }
 
     /**

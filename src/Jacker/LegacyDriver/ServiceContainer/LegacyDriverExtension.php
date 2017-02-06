@@ -16,19 +16,18 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class LegacyDriverExtension implements Extension
 {
     
-    const CONFIG_KEY = 'legacy_driver';
+    const CONFIG_KEY = 'legacy';
 
     const KERNEL_ID = 'behat.legacy.driver.app';
 
-    private $magentoDriverFactory;
+    private $legacyDriverFactory;
 
     /**
      * LegacyDriverExtension constructor.
      */
     public function __construct()
     {
-
-        $this->magentoDriverFactory = new LegacyFactory();
+        $this->legacyDriverFactory = new LegacyFactory();
     }
 
     /**
@@ -55,7 +54,7 @@ class LegacyDriverExtension implements Extension
         /** @var MinkExtension $mink */
         $mink = $extensionManager->getExtension(MinkExtension::MINK_ID);
         $mink->registerDriverFactory(
-            $this->magentoDriverFactory
+            $this->legacyDriverFactory
         );
 
     }
@@ -71,11 +70,12 @@ class LegacyDriverExtension implements Extension
          */
 
 
-//        $builder
-//            ->children()
-//                ->scalarNode(Config::CONFIG_KEY_MAGENTO_BOOTSTRAP_PATH)
-//                    ->defaultValue(getcwd() . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'bootstrap.php')
-//                ->end()
+        $builder
+            ->children()
+                ->scalarNode('front_controller')
+                    ->defaultValue('index.php')
+                ->end()
+            ->end();
 //                ->arrayNode(Config::CONFIG_KEY_MAGENTO_CONFIGS)
 //                    ->prototype('array')
 //                        ->children()

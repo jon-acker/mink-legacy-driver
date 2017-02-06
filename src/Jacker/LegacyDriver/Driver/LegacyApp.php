@@ -2,6 +2,7 @@
 
 namespace Jacker\LegacyDriver\Driver;
 
+use Behat\Mink\Exception\Exception;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +44,11 @@ class LegacyApp implements HttpKernelInterface
 
         parse_str($_SERVER['QUERY_STRING'], $_GET);
 
-        $contents = $this->runApplication();
+        try {
+            $contents = $this->runApplication();
+        } catch (\Exception $exception) {
+            return new Response('barf', 500);
+        }
 
         return new Response($contents, 200);
     }
@@ -67,7 +72,7 @@ class LegacyApp implements HttpKernelInterface
     {
         ob_start();
 
-        include './index.php';
+        include 'web/index.php';
 
         $contents = ob_get_contents();
         ob_end_clean();
