@@ -1,11 +1,12 @@
 <?php
 
-namespace MageTest\LegacyDriver\ServiceContainer;
+namespace Jacker\LegacyDriver\ServiceContainer;
 
 use Behat\MinkExtension\ServiceContainer\MinkExtension;
 use Behat\Testwork\ServiceContainer\Extension;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
 use Jacker\LegacyDriver\Driver\LegacyApp;
+use Jacker\LegacyDriver\Driver\LegacyFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
