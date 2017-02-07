@@ -32,6 +32,7 @@ class TestClient extends Client
     {
         return $this->kernel->handle($request);
     }
+
     /**
      * @param HttpResponse $response
      *

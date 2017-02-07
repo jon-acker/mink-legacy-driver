@@ -2,12 +2,14 @@
 
 namespace Jacker\LegacyDriver\Driver;
 
-use Behat\Mink\Exception\Exception;
+use Exception;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class LegacyApp implements HttpKernelInterface
 {
@@ -46,8 +48,8 @@ class LegacyApp implements HttpKernelInterface
 
         try {
             $contents = $this->runApplication();
-        } catch (\Exception $exception) {
-            return new Response('barf', 500);
+        } catch (Exception $exception) {
+            return new Response($exception->getMessage(), 500);
         }
 
         return new Response($contents, 200);
@@ -70,13 +72,14 @@ class LegacyApp implements HttpKernelInterface
      */
     private function runApplication()
     {
-        ob_start();
+        $command = sprintf('php %s/execute.php %s %s', __DIR__, $this->container->getParameter('front_controller'), $_SERVER['REQUEST_URI']);
+        $process = new Process($command);
+        $process->run();
 
-        include 'web/index.php';
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
 
-        $contents = ob_get_contents();
-        ob_end_clean();
-
-        return $contents;
+        return $process->getOutput();
     }
 }

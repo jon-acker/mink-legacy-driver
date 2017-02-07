@@ -104,6 +104,8 @@ class LegacyDriverExtension implements Extension
      */
     public function load(ContainerBuilder $container, array $config)
     {
+        $container->setParameter('front_controller', $config['front_controller']);
+
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/config'));
         $loader->load('services.xml');
 

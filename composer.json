@@ -17,5 +17,8 @@
     },
     "autoload": {
         "psr-0": { "Jacker\\LegacyDriver": "src/" }
+    },
+    "require": {
+        "symfony/process": "^3.2"
     }
 }
