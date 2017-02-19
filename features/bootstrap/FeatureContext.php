@@ -12,9 +12,11 @@ class FeatureContext extends RawMinkContext
      */
     public function aaa()
     {
-        $this->getSession()->setCookie('abc', 'def');
+        $this->getSession()->visit('/form');
 
-        $this->getSession()->visit('/item');
+        $this->getSession()->getPage()->fillField('name', 'Carlos');
+        $this->getSession()->getPage()->fillField('surname', 'Ortega');
+        $this->getSession()->getPage()->pressButton('send');
 
         echo $this->getSession()->getPage()->getContent();
     }

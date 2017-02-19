@@ -44,6 +44,7 @@ final class LegacyApp
 
     private function setDefaultVariables()
     {
+        $_REQUEST = array();
         $_ENV = array();
         $_GET = array();
         $_POST = array();
