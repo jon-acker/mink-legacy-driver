@@ -1,0 +1,19 @@
+default:
+  suites:
+    default:
+      contexts:
+        - FeatureContext: ~
+  extensions:
+    Jacker\LegacyDriver\Extension: ~
+    Behat\MinkExtension:
+      sessions:
+        default:
+          legacy:
+            bootstrap: legacy/bootstrap/bootstrap.php
+            controller: legacy/index.php
+#            controller:
+#              - path: /item
+#                file: legacy/item.php
+#                methods: [POST, HEAD]
+#              - path: /login
+#                file: legacy/login.php
