@@ -40,14 +40,17 @@ final class LegacyApp
     {
         $variablesOrder = ini_get('variables_order');
 
-        $this->setDefaultVariables();
+        $this->setDefaultVariables($configuration);
         $length = strlen($variablesOrder);
         for ($i = 0; $i < $length; $i++) {
             call_user_func(array($this, $this->variablesCallablesMap[$variablesOrder[$i]]), $request, $configuration);
         }
     }
 
-    private function setDefaultVariables()
+    /**
+     * @param Configuration $configuration
+     */
+    private function setDefaultVariables(Configuration $configuration)
     {
         $_REQUEST = array();
         $_ENV = array();
@@ -55,13 +58,19 @@ final class LegacyApp
         $_POST = array();
         $_COOKIE = array();
         $_SERVER = array();
+
+        foreach ($configuration->getEnvironment() as $key => $value) {
+            putenv(sprintf('%s=%s', $key, $value));
+        }
     }
 
     /**
-     * @param Request $request
+     * @param Request       $request
+     * @param Configuration $configuration
      */
-    private function setEnvironmentVariables(Request $request)
+    private function setEnvironmentVariables(Request $request, Configuration $configuration)
     {
+        $_ENV = $configuration->getEnvironment();
     }
 
     /**

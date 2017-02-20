@@ -33,6 +33,23 @@ final class DriverFactory implements MinkDriverFactory
     {
         $builder
             ->children()
+                ->arrayNode('environment')
+                    ->useAttributeAsKey('name')
+                        ->prototype('variable')
+                    ->end()
+                     ->validate()
+                         ->ifTrue(function ($variables) {
+                             foreach ($variables as $key => $value) {
+                                 if (!is_string($key)) {
+                                     return true;
+                                 }
+                             }
+
+                             return false;
+                         })
+                         ->thenInvalid('Environment variables must be strings.')
+                     ->end()
+                ->end()
                 ->scalarNode('public_folder')->isRequired()->end()
                 ->variableNode('bootstrap')
                     ->beforeNormalization()
@@ -121,6 +138,7 @@ final class DriverFactory implements MinkDriverFactory
     {
         $configuration = new Configuration();
         $configuration->setPublicFolder(realpath($config['public_folder']));
+        $configuration->setEnvironment($config['environment']);
 
         return new Definition('Behat\Mink\Driver\BrowserKitDriver', array(
             $this->buildClient($this->composerRouteCollection($config['controller']), $configuration),

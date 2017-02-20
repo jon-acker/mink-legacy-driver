@@ -13,7 +13,7 @@ switch ($uri) {
         break;
 
     case '/form-submit':
-        echo 'Your name is ' . $_POST['name'] . ' ' . $_POST['surname'];
+        echo 'Your name is ' . $_POST['name'] . ' ' . $_POST['surname'] . ' and the env variable is ' . getenv('ABC');
         break;
 
     case '/login':

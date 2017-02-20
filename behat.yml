@@ -9,5 +9,7 @@ default:
       sessions:
         default:
           legacy:
+            environment:
+              ABC: '%paths.base%'
             public_folder: legacy
             controller: legacy/index.php
