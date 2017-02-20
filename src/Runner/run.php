@@ -1,6 +1,19 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+$path = __DIR__;
+while ($path !== '/') {
+    if (file_exists($path . '/autoload.php')) {
+        require_once $path . '/autoload.php';
+        break;
+    }
+
+    if (file_exists($path . '/vendor/autoload.php')) {
+        require_once $path . '/vendor/autoload.php';
+        break;
+    }
+
+    $path = dirname($path);
+}
 
 if (php_sapi_name() === 'cgi-fcgi') {
     $argv = array();
