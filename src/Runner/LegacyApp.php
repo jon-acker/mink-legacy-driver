@@ -2,6 +2,7 @@
 
 namespace Jacker\LegacyDriver\Runner;
 
+use Jacker\LegacyDriver\Configuration;
 use Symfony\Component\BrowserKit\Request;
 
 final class LegacyApp
@@ -18,27 +19,31 @@ final class LegacyApp
     );
 
     /**
-     * @param Request $request
+     * @param Request       $request
+     * @param Configuration $configuration
      */
-    public function handle(Request $request)
+    public function handle(Request $request, Configuration $configuration)
     {
-        $this->setVariables($request);
+        $this->setVariables($request, $configuration);
 
         $serverVariables = $request->getServer();
+
+        chdir($configuration->getPublicFolder());
         require_once $serverVariables['SCRIPT_FILENAME'];
     }
 
     /**
-     * @param Request $request
+     * @param Request       $request
+     * @param Configuration $configuration
      */
-    private function setVariables(Request $request)
+    private function setVariables(Request $request, Configuration $configuration)
     {
         $variablesOrder = ini_get('variables_order');
 
         $this->setDefaultVariables();
         $length = strlen($variablesOrder);
         for ($i = 0; $i < $length; $i++) {
-            call_user_func(array($this, $this->variablesCallablesMap[$variablesOrder[$i]]), $request);
+            call_user_func(array($this, $this->variablesCallablesMap[$variablesOrder[$i]]), $request, $configuration);
         }
     }
 
@@ -94,11 +99,14 @@ final class LegacyApp
     }
 
     /**
-     * @param Request $request
+     * @param Request       $request
+     * @param Configuration $configuration
      */
-    private function setServerVariables(Request $request)
+    private function setServerVariables(Request $request, Configuration $configuration)
     {
         $_SERVER = $request->getServer();
+        $_SERVER['DOCUMENT_ROOT'] = $configuration->getPublicFolder() . '/';
+        $_SERVER['SCRIPT_NAME'] = str_replace($configuration->getPublicFolder(), '', $_SERVER['SCRIPT_FILENAME']);
 
         $parts = parse_url($request->getUri());
         $_SERVER['REQUEST_SCHEME'] = strtolower($parts['scheme']);

@@ -9,11 +9,5 @@ default:
       sessions:
         default:
           legacy:
-            bootstrap: legacy/bootstrap/bootstrap.php
+            public_folder: legacy
             controller: legacy/index.php
-#            controller:
-#              - path: /item
-#                file: legacy/item.php
-#                methods: [POST, HEAD]
-#              - path: /login
-#                file: legacy/login.php

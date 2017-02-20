@@ -33,6 +33,7 @@ final class DriverFactory implements MinkDriverFactory
     {
         $builder
             ->children()
+                ->scalarNode('public_folder')->isRequired()->end()
                 ->variableNode('bootstrap')
                     ->beforeNormalization()
                         ->always(function ($bootstrap) {
@@ -118,8 +119,11 @@ final class DriverFactory implements MinkDriverFactory
      */
     public function buildDriver(array $config)
     {
+        $configuration = new Configuration();
+        $configuration->setPublicFolder(realpath($config['public_folder']));
+
         return new Definition('Behat\Mink\Driver\BrowserKitDriver', array(
-            $this->buildClient($this->composerRouteCollection($config['controller'])),
+            $this->buildClient($this->composerRouteCollection($config['controller']), $configuration),
             '%mink.base_url%',
         ));
     }
@@ -164,13 +168,17 @@ final class DriverFactory implements MinkDriverFactory
     /**
      * @param RouteCollection $controllers
      *
+     * @param Configuration   $configuration
+     *
      * @return Definition
      */
-    private function buildClient(RouteCollection $controllers)
+    private function buildClient(RouteCollection $controllers, Configuration $configuration)
     {
         return new Definition('Jacker\LegacyDriver\Client', array(
             $this->buildSerializer(),
-            $controllers
+            $controllers,
+            $this->buildHttpParser(),
+            $configuration
         ));
     }
 
@@ -180,5 +188,13 @@ final class DriverFactory implements MinkDriverFactory
     private function buildSerializer()
     {
         return new Definition('Jacker\LegacyDriver\Serializer');
+    }
+
+    /**
+     * @return Definition
+     */
+    private function buildHttpParser()
+    {
+        return new Definition('Jacker\LegacyDriver\HttpParser');
     }
 }

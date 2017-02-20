@@ -1,6 +1,6 @@
 Feature:
 
   Scenario:
-    Given AAA
+    Given AAA "Carlos" "Ortega"
     When BBB
     Then CCC

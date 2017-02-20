@@ -8,14 +8,16 @@ use Behat\MinkExtension\Context\RawMinkContext;
 class FeatureContext extends RawMinkContext
 {
     /**
-     * @Given AAA
+     * @Given AAA :arg1 :arg2
      */
-    public function aaa()
+    public function aaa2($name, $surname)
     {
         $this->getSession()->visit('/form');
 
-        $this->getSession()->getPage()->fillField('name', 'Carlos');
-        $this->getSession()->getPage()->fillField('surname', 'Ortega');
+//        echo $this->getSession()->getPage()->getContent();die;
+
+        $this->getSession()->getPage()->fillField('name', $name);
+        $this->getSession()->getPage()->fillField('surname', $surname);
         $this->getSession()->getPage()->pressButton('send');
 
         echo $this->getSession()->getPage()->getContent();

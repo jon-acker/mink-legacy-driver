@@ -45,7 +45,12 @@ final class RunCommand extends Command
             ->addArgument(
                 'request',
                 InputArgument::REQUIRED,
-                'The request serialized and encoded on base64.'
+                'The request serialized and encoded.'
+            )
+            ->addArgument(
+                'configuration',
+                InputArgument::REQUIRED,
+                'The configuration serialized and encoded.'
             )
         ;
     }
@@ -56,7 +61,8 @@ final class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $request = $this->serializer->deserialize($input->getArgument('request'));
+        $configuration = $this->serializer->deserialize($input->getArgument('configuration'));
 
-        $this->legacyApp->handle($request);
+        $this->legacyApp->handle($request, $configuration);
     }
 }
