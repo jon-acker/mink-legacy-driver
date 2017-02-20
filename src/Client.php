@@ -2,6 +2,7 @@
 
 namespace Jacker\LegacyDriver;
 
+use Jacker\LegacyDriver\LegacyApp\LegacyAppBuilder;
 use Jacker\LegacyDriver\Runner\RunCommand;
 use Symfony\Component\BrowserKit\Client as BrowserKitClient;
 use Symfony\Component\BrowserKit\Request;
@@ -26,29 +27,25 @@ final class Client extends BrowserKitClient
     private $controllers;
 
     /**
-     * @var HttpParser
+     * @var LegacyAppBuilder
      */
-    private $parser;
+    private $legacyAppBuilder;
 
     /**
-     * @var Configuration
+     * @param Serializer       $serializer
+     * @param RouteCollection  $controllers
+     * @param LegacyAppBuilder $legacyAppBuilder
      */
-    private $configuration;
-
-    /**
-     * @param Serializer      $serializer
-     * @param RouteCollection $controllers
-     * @param HttpParser      $parser
-     * @param Configuration   $configuration
-     */
-    public function __construct(Serializer $serializer, RouteCollection $controllers, HttpParser $parser, Configuration $configuration)
-    {
+    public function __construct(
+        Serializer $serializer,
+        RouteCollection $controllers,
+        LegacyAppBuilder $legacyAppBuilder
+    ) {
         parent::__construct();
 
         $this->serializer = $serializer;
         $this->controllers = $controllers;
-        $this->parser = $parser;
-        $this->configuration = $configuration;
+        $this->legacyAppBuilder = $legacyAppBuilder;
     }
 
     /**
@@ -66,7 +63,7 @@ final class Client extends BrowserKitClient
             throw new ProcessFailedException($process);
         }
 
-        return $this->parser->createResponseFrom($process->getOutput());
+        return HttpParser::createResponseFrom($process->getOutput());
     }
 
     /**
@@ -130,7 +127,7 @@ final class Client extends BrowserKitClient
             realpath(__DIR__ . self::RUNNER),
             RunCommand::NAME,
             $this->serializer->serialize($request),
-            $this->serializer->serialize($this->configuration)
+            $this->serializer->serialize($this->legacyAppBuilder)
         );
     }
 }

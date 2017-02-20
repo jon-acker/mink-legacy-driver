@@ -3,6 +3,7 @@
 namespace Jacker\LegacyDriver;
 
 use Behat\MinkExtension\ServiceContainer\Driver\DriverFactory as MinkDriverFactory;
+use Jacker\LegacyDriver\LegacyApp\LegacyAppBuilder;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Routing\Route;
@@ -31,104 +32,8 @@ final class DriverFactory implements MinkDriverFactory
      */
     public function configure(ArrayNodeDefinition $builder)
     {
-        $builder
-            ->children()
-                ->arrayNode('environment')
-                    ->useAttributeAsKey('name')
-                        ->prototype('variable')
-                    ->end()
-                     ->validate()
-                         ->ifTrue(function ($variables) {
-                             foreach ($variables as $key => $value) {
-                                 if (!is_string($key)) {
-                                     return true;
-                                 }
-                             }
-
-                             return false;
-                         })
-                         ->thenInvalid('Environment variables must be strings.')
-                     ->end()
-                ->end()
-                ->scalarNode('public_folder')->isRequired()->end()
-                ->variableNode('bootstrap')
-                    ->beforeNormalization()
-                        ->always(function ($bootstrap) {
-                            if (is_string($bootstrap)) {
-                                $bootstrap = array($bootstrap);
-                            }
-
-                            return $bootstrap;
-                        })
-                    ->end()
-                    ->validate()
-                        ->ifTrue(function ($scripts) {
-                            if (!is_array($scripts)) {
-                                return true;
-                            }
-
-                            foreach ($scripts as $script) {
-                                if (!is_string($script)) {
-                                    return true;
-                                }
-                            }
-
-                            return false;
-                        })
-                        ->thenInvalid('Bootstrap key must be an string or an array of strings.')
-                    ->end()
-                ->end()
-                ->variableNode('controller')
-                    ->beforeNormalization()
-                        ->always(function ($controller) {
-                            if (is_string($controller)) {
-                                $controller = array(array(
-                                    'path' => '/{catchall}',
-                                    'file' => $controller,
-                                    'requirements' => array('catchall' => '.*')
-                                ));
-                            }
-
-                            return $controller;
-                        })
-                    ->end()
-                    ->validate()
-                        ->ifTrue(function ($controllers) {
-                            return !is_array($controllers);
-                        })
-                        ->thenInvalid('Controller configuration must be an string or an array.')
-                        ->ifTrue(function ($controllers) {
-                            foreach ($controllers as $controller) {
-                                if (!array_key_exists('path', $controller) || !array_key_exists('file', $controller)) {
-                                    return true;
-                                }
-
-                                if (!is_string($controller['path']) || !is_string($controller['file'])) {
-                                    return true;
-                                }
-                            }
-
-                            return false;
-                        })
-                        ->thenInvalid('Controllers must have the `path` and `file` keys as string.')
-                        ->ifTrue(function ($controllers) {
-                            foreach ($controllers as $controller) {
-                                if (array_key_exists('requirements', $controller) && !is_array($controller['requirements'])) {
-                                    return true;
-                                }
-
-                                if (array_key_exists('methods', $controller) && !is_array($controller['methods'])) {
-                                    return true;
-                                }
-                            }
-
-                            return false;
-                        })
-                        ->thenInvalid('Controllers keys `requirements` and `methods`, if defined,  must be arrays.')
-                    ->end()
-                ->end()
-            ->end()
-        ;
+        $configuration = new Configuration();
+        $configuration->configure($builder);
     }
 
     /**
@@ -136,12 +41,12 @@ final class DriverFactory implements MinkDriverFactory
      */
     public function buildDriver(array $config)
     {
-        $configuration = new Configuration();
-        $configuration->setPublicFolder(realpath($config['public_folder']));
-        $configuration->setEnvironment($config['environment']);
+        $legacyAppBuilder = new LegacyAppBuilder($config[Configuration::PUBLIC_FOLDER_KEY]);
+        $legacyAppBuilder->addEnvironmentVariables($config[Configuration::ENVIRONMENT_KEY]);
+        $legacyAppBuilder->addBootstrapScripts($config[Configuration::BOOTSTRAP_KEY]);
 
         return new Definition('Behat\Mink\Driver\BrowserKitDriver', array(
-            $this->buildClient($this->composerRouteCollection($config['controller']), $configuration),
+            $this->buildClient($this->composerRouteCollection($config['controller']), $legacyAppBuilder),
             '%mink.base_url%',
         ));
     }
@@ -184,19 +89,17 @@ final class DriverFactory implements MinkDriverFactory
     }
 
     /**
-     * @param RouteCollection $controllers
-     *
-     * @param Configuration   $configuration
+     * @param RouteCollection  $controllers
+     * @param LegacyAppBuilder $legacyAppBuilder
      *
      * @return Definition
      */
-    private function buildClient(RouteCollection $controllers, Configuration $configuration)
+    private function buildClient(RouteCollection $controllers, LegacyAppBuilder $legacyAppBuilder)
     {
         return new Definition('Jacker\LegacyDriver\Client', array(
             $this->buildSerializer(),
             $controllers,
-            $this->buildHttpParser(),
-            $configuration
+            $legacyAppBuilder
         ));
     }
 
@@ -206,13 +109,5 @@ final class DriverFactory implements MinkDriverFactory
     private function buildSerializer()
     {
         return new Definition('Jacker\LegacyDriver\Serializer');
-    }
-
-    /**
-     * @return Definition
-     */
-    private function buildHttpParser()
-    {
-        return new Definition('Jacker\LegacyDriver\HttpParser');
     }
 }

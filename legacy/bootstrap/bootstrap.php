@@ -1,3 +1,3 @@
 <?php
 
-echo 'Bootstrap file!';
+echo '<h1>Bootstrap file called</h1>';

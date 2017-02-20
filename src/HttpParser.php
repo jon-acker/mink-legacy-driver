@@ -16,14 +16,14 @@ final class HttpParser
      *
      * @return Response
      */
-    public function createResponseFrom($message)
+    public static function createResponseFrom($message)
     {
         $message = preg_replace('/^Status:/', self::HTTP_VERSION, $message, 1);
         if (strpos($message, self::HTTP_VERSION) !== 0) {
             $message = self::HTTP_VERSION . ' ' . self::DEFAULT_STATUS_CODE . "\r\n" . $message;
         }
 
-        $data = $this->parseMessage($message);
+        $data = self::parseMessage($message);
         $parts = explode(' ', $data['start-line'], 3);
 
         return new Response(
@@ -40,7 +40,7 @@ final class HttpParser
      *
      * @return array
      */
-    private function parseMessage($message)
+    private static function parseMessage($message)
     {
         if (!$message) {
             throw new \InvalidArgumentException('Invalid message');

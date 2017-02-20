@@ -18,20 +18,13 @@ final class RunCommand extends Command
     private $serializer;
 
     /**
-     * @var LegacyApp
-     */
-    private $legacyApp;
-
-    /**
      * @param Serializer $serializer
-     * @param LegacyApp  $legacyApp
      */
-    public function __construct(Serializer $serializer, LegacyApp $legacyApp)
+    public function __construct(Serializer $serializer)
     {
         parent::__construct();
 
         $this->serializer = $serializer;
-        $this->legacyApp = $legacyApp;
     }
 
     /**
@@ -48,9 +41,9 @@ final class RunCommand extends Command
                 'The request serialized and encoded.'
             )
             ->addArgument(
-                'configuration',
+                'legacy_app_builder',
                 InputArgument::REQUIRED,
-                'The configuration serialized and encoded.'
+                'The legacy app builder serialized and encoded.'
             )
         ;
     }
@@ -61,8 +54,8 @@ final class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $request = $this->serializer->deserialize($input->getArgument('request'));
-        $configuration = $this->serializer->deserialize($input->getArgument('configuration'));
 
-        $this->legacyApp->handle($request, $configuration);
+        $legacyAppBuilder = $this->serializer->deserialize($input->getArgument('legacy_app_builder'));
+        $legacyAppBuilder->build()->handle($request);
     }
 }

@@ -31,8 +31,7 @@ if (php_sapi_name() === 'cgi-fcgi') {
 $input = new \Symfony\Component\Console\Input\ArgvInput($argv);
 
 $serializer = new \Jacker\LegacyDriver\Serializer();
-$legacyApp = new \Jacker\LegacyDriver\Runner\LegacyApp();
 
 $app = new \Symfony\Component\Console\Application();
-$app->add(new \Jacker\LegacyDriver\Runner\RunCommand($serializer, $legacyApp));
+$app->add(new \Jacker\LegacyDriver\Runner\RunCommand($serializer));
 $app->run($input);

@@ -1,8 +1,7 @@
 <?php
 
-namespace Jacker\LegacyDriver\Runner;
+namespace Jacker\LegacyDriver\LegacyApp;
 
-use Jacker\LegacyDriver\Configuration;
 use Symfony\Component\BrowserKit\Request;
 
 final class LegacyApp
@@ -19,38 +18,60 @@ final class LegacyApp
     );
 
     /**
-     * @param Request       $request
-     * @param Configuration $configuration
+     * @var string
      */
-    public function handle(Request $request, Configuration $configuration)
+    private $publicFolder;
+
+    /**
+     * @var string[]
+     */
+    private $environmentVariables;
+
+    /**
+     * @var string[]
+     */
+    private $bootstrapScripts;
+
+    /**
+     * @param string   $publicFolder
+     * @param string[] $environmentVariables
+     * @param string[] $bootstrapScripts
+     */
+    public function __construct($publicFolder, array $environmentVariables, array $bootstrapScripts)
     {
-        $this->setVariables($request, $configuration);
+        $this->publicFolder = $publicFolder;
+        $this->environmentVariables = $environmentVariables;
+        $this->bootstrapScripts = $bootstrapScripts;
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function handle(Request $request)
+    {
+        $this->setVariables($request);
 
         $serverVariables = $request->getServer();
 
-        chdir($configuration->getPublicFolder());
+        chdir($this->publicFolder);
         require_once $serverVariables['SCRIPT_FILENAME'];
     }
 
     /**
-     * @param Request       $request
-     * @param Configuration $configuration
+     * @param Request $request
      */
-    private function setVariables(Request $request, Configuration $configuration)
+    private function setVariables(Request $request)
     {
         $variablesOrder = ini_get('variables_order');
 
-        $this->setDefaultVariables($configuration);
+        $this->setDefaultVariables();
         $length = strlen($variablesOrder);
         for ($i = 0; $i < $length; $i++) {
-            call_user_func(array($this, $this->variablesCallablesMap[$variablesOrder[$i]]), $request, $configuration);
+            call_user_func(array($this, $this->variablesCallablesMap[$variablesOrder[$i]]), $request);
         }
     }
 
-    /**
-     * @param Configuration $configuration
-     */
-    private function setDefaultVariables(Configuration $configuration)
+    private function setDefaultVariables()
     {
         $_REQUEST = array();
         $_ENV = array();
@@ -59,18 +80,14 @@ final class LegacyApp
         $_COOKIE = array();
         $_SERVER = array();
 
-        foreach ($configuration->getEnvironment() as $key => $value) {
+        foreach ($this->environmentVariables as $key => $value) {
             putenv(sprintf('%s=%s', $key, $value));
         }
     }
 
-    /**
-     * @param Request       $request
-     * @param Configuration $configuration
-     */
-    private function setEnvironmentVariables(Request $request, Configuration $configuration)
+    private function setEnvironmentVariables()
     {
-        $_ENV = $configuration->getEnvironment();
+        $_ENV = $this->environmentVariables;
     }
 
     /**
@@ -108,14 +125,13 @@ final class LegacyApp
     }
 
     /**
-     * @param Request       $request
-     * @param Configuration $configuration
+     * @param Request $request
      */
-    private function setServerVariables(Request $request, Configuration $configuration)
+    private function setServerVariables(Request $request)
     {
         $_SERVER = $request->getServer();
-        $_SERVER['DOCUMENT_ROOT'] = $configuration->getPublicFolder() . '/';
-        $_SERVER['SCRIPT_NAME'] = str_replace($configuration->getPublicFolder(), '', $_SERVER['SCRIPT_FILENAME']);
+        $_SERVER['DOCUMENT_ROOT'] = $this->publicFolder . '/';
+        $_SERVER['SCRIPT_NAME'] = str_replace($this->publicFolder, '', $_SERVER['SCRIPT_FILENAME']);
 
         $parts = parse_url($request->getUri());
         $_SERVER['REQUEST_SCHEME'] = strtolower($parts['scheme']);
