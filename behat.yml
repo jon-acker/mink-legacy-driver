@@ -11,6 +11,8 @@ default:
           legacy:
             bootstrap: legacy/bootstrap/bootstrap.php
             environment:
-              ABC: '%paths.base%'
-            public_folder: legacy
+              abc: def
+            document_root: legacy
             controller: legacy/index.php
+            mapping:
+              Jacker\LegacyDriver\Legacy\Outputer: legacy/FakeOutputer.php

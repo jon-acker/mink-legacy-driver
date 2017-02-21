@@ -9,10 +9,11 @@ use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 
 abstract class ConfigurableDriverFactory implements DriverFactory
 {
-    const PUBLIC_FOLDER_KEY = 'public_folder';
+    const DOCUMENT_ROOT_KEY = 'document_root';
     const CONTROLLER_KEY = 'controller';
     const ENVIRONMENT_KEY = 'environment';
     const BOOTSTRAP_KEY = 'bootstrap';
+    const MAPPING_KEY = 'mapping';
 
     /**
      * {@inheritdoc}
@@ -21,10 +22,11 @@ abstract class ConfigurableDriverFactory implements DriverFactory
     {
         $builder
             ->children()
-                ->append($this->getPublicFolderConfiguration())
+                ->append($this->getDocumentRootConfiguration())
                 ->append($this->getControllerConfiguration())
                 ->append($this->getEnvironmentConfiguration())
                 ->append($this->getBootstrapConfiguration())
+                ->append($this->getMappingConfiguration())
             ->end()
         ;
     }
@@ -32,9 +34,9 @@ abstract class ConfigurableDriverFactory implements DriverFactory
     /**
      * @return NodeDefinition
      */
-    private function getPublicFolderConfiguration()
+    private function getDocumentRootConfiguration()
     {
-        $node = new ScalarNodeDefinition(self::PUBLIC_FOLDER_KEY);
+        $node = new ScalarNodeDefinition(self::DOCUMENT_ROOT_KEY);
 
         return $node
             ->isRequired()
@@ -47,7 +49,7 @@ abstract class ConfigurableDriverFactory implements DriverFactory
                 ->ifTrue(function ($folder) {
                     return !is_dir($folder);
                 })
-                ->thenInvalid('Public folder is not found. Please provide an existing folder.')
+                ->thenInvalid('Document root folder is not found. Please provide an existing folder.')
             ->end()
         ;
     }
@@ -148,6 +150,31 @@ abstract class ConfigurableDriverFactory implements DriverFactory
                         return !is_file($file);
                     })
                     ->thenInvalid('Bootstrap file is not found. Please provide an existing file.')
+                ->end()
+            ->end()
+        ;
+    }
+
+    /**
+     * @return NodeDefinition
+     */
+    private function getMappingConfiguration()
+    {
+        $node = new ArrayNodeDefinition(self::MAPPING_KEY);
+
+        return $node
+            ->useAttributeAsKey('classname')
+            ->prototype('scalar')
+                ->beforeNormalization()
+                    ->always(function ($file) {
+                        return realpath($file);
+                    })
+                ->end()
+                ->validate()
+                    ->ifTrue(function ($file) {
+                        return !is_file($file);
+                    })
+                    ->thenInvalid('Replacement file not found. Please provide an existing file.')
                 ->end()
             ->end()
         ;

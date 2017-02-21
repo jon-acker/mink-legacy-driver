@@ -3,12 +3,12 @@
 $path = __DIR__;
 while ($path !== '/') {
     if (file_exists($path . '/autoload.php')) {
-        require_once $path . '/autoload.php';
+        $composer = require_once $path . '/autoload.php';
         break;
     }
 
     if (file_exists($path . '/vendor/autoload.php')) {
-        require_once $path . '/vendor/autoload.php';
+        $composer = require_once $path . '/vendor/autoload.php';
         break;
     }
 

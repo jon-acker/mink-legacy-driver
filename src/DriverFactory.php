@@ -30,9 +30,10 @@ final class DriverFactory extends ConfigurableDriverFactory
      */
     public function buildDriver(array $config)
     {
-        $legacyAppBuilder = new LegacyAppBuilder($config[self::PUBLIC_FOLDER_KEY]);
+        $legacyAppBuilder = new LegacyAppBuilder($config[self::DOCUMENT_ROOT_KEY]);
         $legacyAppBuilder->addEnvironmentVariables($config[self::ENVIRONMENT_KEY]);
         $legacyAppBuilder->addBootstrapScripts($config[self::BOOTSTRAP_KEY]);
+        $legacyAppBuilder->addMappingClasses($config[self::MAPPING_KEY]);
 
         return new Definition('Behat\Mink\Driver\BrowserKitDriver', array(
             $this->buildClient($this->composerRouteCollection($config[self::CONTROLLER_KEY]), $legacyAppBuilder),
@@ -50,26 +51,16 @@ final class DriverFactory extends ConfigurableDriverFactory
         $collection = new RouteCollection();
 
         foreach ($controllers as $controller) {
-            $requirements = array();
-            if (isset($controller['requirements'])) {
-                $requirements = $controller['requirements'];
-            }
-
-            $methods = array();
-            if (isset($controller['methods'])) {
-                $methods = $controller['methods'];
-            }
-
             $collection->add(
                 md5(serialize($controller)),
                 new Route(
                     $controller['path'],
                     array('file' => $controller['file']),
-                    $requirements,
+                    $controller['requirements'],
                     array(),
                     '',
                     array(),
-                    $methods
+                    $controller['methods']
                 )
             );
         }

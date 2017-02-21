@@ -7,7 +7,7 @@ final class LegacyAppBuilder
     /**
      * @var string
      */
-    private $publicFolder;
+    private $documentRoot;
 
     /**
      * @var string[]
@@ -20,11 +20,19 @@ final class LegacyAppBuilder
     private $bootstrapScripts;
 
     /**
-     * @param string $publicFolder
+     * @var string[]
      */
-    public function __construct($publicFolder)
+    private $mappingClasses;
+
+    /**
+     * @param string $documentRoot
+     */
+    public function __construct($documentRoot)
     {
-        $this->publicFolder = $publicFolder;
+        $this->documentRoot = $documentRoot;
+        $this->environmentVariables = array();
+        $this->bootstrapScripts = array();
+        $this->mappingClasses = array();
     }
 
     /**
@@ -44,14 +52,23 @@ final class LegacyAppBuilder
     }
 
     /**
+     * @param string[] $mappingClasses
+     */
+    public function addMappingClasses(array $mappingClasses)
+    {
+        $this->mappingClasses = $mappingClasses;
+    }
+
+    /**
      * @return LegacyApp
      */
     public function build()
     {
         return new LegacyApp(
-            $this->publicFolder,
+            $this->documentRoot,
             $this->environmentVariables,
-            $this->bootstrapScripts
+            $this->bootstrapScripts,
+            $this->mappingClasses
         );
     }
 }

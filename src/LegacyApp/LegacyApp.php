@@ -20,7 +20,7 @@ final class LegacyApp
     /**
      * @var string
      */
-    private $publicFolder;
+    private $documentRoot;
 
     /**
      * @var string[]
@@ -33,15 +33,26 @@ final class LegacyApp
     private $bootstrapScripts;
 
     /**
-     * @param string   $publicFolder
+     * @var array
+     */
+    private $mappingClasses;
+
+    /**
+     * @param string   $documentRoot
      * @param string[] $environmentVariables
      * @param string[] $bootstrapScripts
+     * @param array    $mappingClasses
      */
-    public function __construct($publicFolder, array $environmentVariables, array $bootstrapScripts)
-    {
-        $this->publicFolder = $publicFolder;
+    public function __construct(
+        $documentRoot,
+        array $environmentVariables,
+        array $bootstrapScripts,
+        array $mappingClasses
+    ) {
+        $this->documentRoot = $documentRoot;
         $this->environmentVariables = $environmentVariables;
         $this->bootstrapScripts = $bootstrapScripts;
+        $this->mappingClasses = $mappingClasses;
     }
 
     /**
@@ -51,10 +62,13 @@ final class LegacyApp
     {
         $this->setVariables($request);
 
-        chdir($this->publicFolder);
-        $this->runBootstrapScripts();
-
         $serverVariables = $request->getServer();
+
+        chdir(dirname($serverVariables['SCRIPT_FILENAME']));
+
+        $this->runBootstrapScripts();
+        $this->setMapping();
+
         require_once $serverVariables['SCRIPT_FILENAME'];
     }
 
@@ -131,8 +145,8 @@ final class LegacyApp
     private function setServerVariables(Request $request)
     {
         $_SERVER = $request->getServer();
-        $_SERVER['DOCUMENT_ROOT'] = $this->publicFolder . '/';
-        $_SERVER['SCRIPT_NAME'] = str_replace($this->publicFolder, '', $_SERVER['SCRIPT_FILENAME']);
+        $_SERVER['DOCUMENT_ROOT'] = $this->documentRoot . '/';
+        $_SERVER['SCRIPT_NAME'] = str_replace($this->documentRoot, '', $_SERVER['SCRIPT_FILENAME']);
 
         $parts = parse_url($request->getUri());
         $_SERVER['REQUEST_SCHEME'] = strtolower($parts['scheme']);
@@ -154,5 +168,28 @@ final class LegacyApp
         foreach ($this->bootstrapScripts as $bootstrapScript) {
             require_once $bootstrapScript;
         }
+    }
+
+    private function setMapping()
+    {
+        if (count($this->mappingClasses) > 0) {
+            spl_autoload_register(array($this, 'loadClass'), true, true);
+        }
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return bool
+     */
+    private function loadClass($className)
+    {
+        if (array_key_exists($className, $this->mappingClasses)) {
+            require_once $this->mappingClasses[$className];
+
+            return true;
+        }
+
+        return false;
     }
 }
