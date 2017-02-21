@@ -14,7 +14,7 @@ class FeatureContext extends RawMinkContext
     {
         $this->getSession()->visit('/form');
 
-//        echo $this->getSession()->getPage()->getContent();die;
+//        echo $this->getSession()->getPage()->getContent(); die;
 
         $this->getSession()->getPage()->fillField('name', $name);
         $this->getSession()->getPage()->fillField('surname', $surname);

@@ -9,7 +9,7 @@ default:
       sessions:
         default:
           legacy:
-#            bootstrap: legacy/bootstrap/bootstrap.php
+            bootstrap: legacy/bootstrap/bootstrap.php
             environment:
               ABC: '%paths.base%'
             public_folder: legacy

@@ -2,14 +2,12 @@
 
 namespace Jacker\LegacyDriver;
 
-use Behat\MinkExtension\ServiceContainer\Driver\DriverFactory as MinkDriverFactory;
 use Jacker\LegacyDriver\LegacyApp\LegacyAppBuilder;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-final class DriverFactory implements MinkDriverFactory
+final class DriverFactory extends ConfigurableDriverFactory
 {
     /**
      * {@inheritdoc}
@@ -30,23 +28,14 @@ final class DriverFactory implements MinkDriverFactory
     /**
      * {@inheritdoc}
      */
-    public function configure(ArrayNodeDefinition $builder)
-    {
-        $configuration = new Configuration();
-        $configuration->configure($builder);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildDriver(array $config)
     {
-        $legacyAppBuilder = new LegacyAppBuilder($config[Configuration::PUBLIC_FOLDER_KEY]);
-        $legacyAppBuilder->addEnvironmentVariables($config[Configuration::ENVIRONMENT_KEY]);
-        $legacyAppBuilder->addBootstrapScripts($config[Configuration::BOOTSTRAP_KEY]);
+        $legacyAppBuilder = new LegacyAppBuilder($config[self::PUBLIC_FOLDER_KEY]);
+        $legacyAppBuilder->addEnvironmentVariables($config[self::ENVIRONMENT_KEY]);
+        $legacyAppBuilder->addBootstrapScripts($config[self::BOOTSTRAP_KEY]);
 
         return new Definition('Behat\Mink\Driver\BrowserKitDriver', array(
-            $this->buildClient($this->composerRouteCollection($config['controller']), $legacyAppBuilder),
+            $this->buildClient($this->composerRouteCollection($config[self::CONTROLLER_KEY]), $legacyAppBuilder),
             '%mink.base_url%',
         ));
     }

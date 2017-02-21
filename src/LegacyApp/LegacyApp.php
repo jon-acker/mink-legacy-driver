@@ -51,9 +51,10 @@ final class LegacyApp
     {
         $this->setVariables($request);
 
-        $serverVariables = $request->getServer();
-
         chdir($this->publicFolder);
+        $this->runBootstrapScripts();
+
+        $serverVariables = $request->getServer();
         require_once $serverVariables['SCRIPT_FILENAME'];
     }
 
@@ -145,6 +146,13 @@ final class LegacyApp
 
         if ($_SERVER['HTTP_HOST'] === 'https') {
             $_SERVER['HTTPS'] = 'on';
+        }
+    }
+
+    private function runBootstrapScripts()
+    {
+        foreach ($this->bootstrapScripts as $bootstrapScript) {
+            require_once $bootstrapScript;
         }
     }
 }

@@ -2,11 +2,12 @@
 
 namespace Jacker\LegacyDriver;
 
+use Behat\MinkExtension\ServiceContainer\Driver\DriverFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 
-final class Configuration
+abstract class ConfigurableDriverFactory implements DriverFactory
 {
     const PUBLIC_FOLDER_KEY = 'public_folder';
     const CONTROLLER_KEY = 'controller';
@@ -14,9 +15,9 @@ final class Configuration
     const BOOTSTRAP_KEY = 'bootstrap';
 
     /**
-     * @param ArrayNodeDefinition $builder
+     * {@inheritdoc}
      */
-    public function configure(ArrayNodeDefinition $builder)
+    final public function configure(ArrayNodeDefinition $builder)
     {
         $builder
             ->children()
@@ -66,7 +67,7 @@ final class Configuration
                     return array(
                         array(
                             'path' => '/{catchall}',
-                            'file' => realpath($controller),
+                            'file' => $controller,
                             'requirements' => array('catchall' => '.*')
                         )
                     );
