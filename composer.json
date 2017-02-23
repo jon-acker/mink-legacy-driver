@@ -11,9 +11,6 @@
     "autoload": {
         "psr-4": { "Jacker\\LegacyDriver\\": "src/" }
     },
-    "autoload-dev": {
-        "psr-4": { "Jacker\\LegacyDriver\\Legacy\\": "legacy/" }
-    },
     "require": {
         "behat/behat": "^3.3",
         "behat/mink": "^1.7",
