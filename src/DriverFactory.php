@@ -1,8 +1,8 @@
 <?php
 
-namespace Jacker\LegacyDriver;
+namespace carlosV2\LegacyDriver;
 
-use Jacker\LegacyDriver\LegacyApp\LegacyAppBuilder;
+use carlosV2\LegacyDriver\LegacyApp\LegacyAppBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -76,7 +76,7 @@ final class DriverFactory extends ConfigurableDriverFactory
      */
     private function buildClient(RouteCollection $controllers, LegacyAppBuilder $legacyAppBuilder)
     {
-        return new Definition('Jacker\LegacyDriver\Client', array(
+        return new Definition('carlosV2\LegacyDriver\Client', array(
             $this->buildSerializer(),
             $controllers,
             $legacyAppBuilder
@@ -88,6 +88,6 @@ final class DriverFactory extends ConfigurableDriverFactory
      */
     private function buildSerializer()
     {
-        return new Definition('Jacker\LegacyDriver\Serializer');
+        return new Definition('carlosV2\LegacyDriver\Serializer');
     }
 }

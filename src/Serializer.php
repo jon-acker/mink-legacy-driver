@@ -1,8 +1,8 @@
 <?php
 
-namespace Jacker\LegacyDriver;
+namespace carlosV2\LegacyDriver;
 
-use Jacker\LegacyDriver\Exception\UnableToDeserialize;
+use carlosV2\LegacyDriver\Exception\UnableToDeserialize;
 
 final class Serializer
 {

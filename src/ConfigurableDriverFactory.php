@@ -1,6 +1,6 @@
 <?php
 
-namespace Jacker\LegacyDriver;
+namespace carlosV2\LegacyDriver;
 
 use Behat\MinkExtension\ServiceContainer\Driver\DriverFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;

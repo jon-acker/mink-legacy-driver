@@ -1,6 +1,6 @@
 <?php
 
-namespace Jacker\LegacyDriver;
+namespace carlosV2\LegacyDriver;
 
 use Symfony\Component\BrowserKit\Response;
 

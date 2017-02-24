@@ -1,6 +1,6 @@
 <?php
 
-namespace Jacker\LegacyDriver\LegacyApp;
+namespace carlosV2\LegacyDriver\LegacyApp;
 
 final class LegacyAppBuilder
 {

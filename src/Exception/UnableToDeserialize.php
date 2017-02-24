@@ -1,6 +1,6 @@
 <?php
 
-namespace Jacker\LegacyDriver\Exception;
+namespace carlosV2\LegacyDriver\Exception;
 
 final class UnableToDeserialize extends \RuntimeException
 {
