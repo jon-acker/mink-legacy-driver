@@ -3,6 +3,9 @@
 namespace carlosV2\LegacyDriver\LegacyApp;
 
 use Symfony\Component\BrowserKit\Request;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\RouteCollection;
 
 final class LegacyApp
 {
@@ -23,6 +26,11 @@ final class LegacyApp
     private $documentRoot;
 
     /**
+     * @var RouteCollection
+     */
+    private $controllers;
+
+    /**
      * @var string[]
      */
     private $environmentVariables;
@@ -33,26 +41,21 @@ final class LegacyApp
     private $bootstrapScripts;
 
     /**
-     * @var array
-     */
-    private $mappingClasses;
-
-    /**
-     * @param string   $documentRoot
-     * @param string[] $environmentVariables
-     * @param string[] $bootstrapScripts
-     * @param array    $mappingClasses
+     * @param string          $documentRoot
+     * @param RouteCollection $controllers
+     * @param string[]        $environmentVariables
+     * @param string[]        $bootstrapScripts
      */
     public function __construct(
         $documentRoot,
+        RouteCollection $controllers,
         array $environmentVariables,
-        array $bootstrapScripts,
-        array $mappingClasses
+        array $bootstrapScripts
     ) {
         $this->documentRoot = $documentRoot;
+        $this->controllers = $controllers;
         $this->environmentVariables = $environmentVariables;
         $this->bootstrapScripts = $bootstrapScripts;
-        $this->mappingClasses = $mappingClasses;
     }
 
     /**
@@ -60,16 +63,32 @@ final class LegacyApp
      */
     public function handle(Request $request)
     {
+        $controller = $this->getFrontendControllerScript($request);
+
+        chdir(dirname($controller));
         $this->setVariables($request);
 
-        $serverVariables = $request->getServer();
+        $this->bootstrapScripts[] = $controller;
+        $this->bootstrapApp();
+    }
 
-        chdir(dirname($serverVariables['SCRIPT_FILENAME']));
-
-        $this->runBootstrapScripts();
-        $this->setMapping();
-
-        require_once $serverVariables['SCRIPT_FILENAME'];
+    /**
+     * @param Request $request
+     *
+     * @return string
+     */
+    private function getFrontendControllerScript(Request $request)
+    {
+        $parts = parse_url($request->getUri());
+        $matcher = new UrlMatcher(
+            $this->controllers,
+            new RequestContext(
+                '/',
+                strtoupper($request->getMethod())
+            )
+        );
+        $parameters = $matcher->match($parts['path']);
+        return $parameters['file'];
     }
 
     /**
@@ -84,6 +103,10 @@ final class LegacyApp
         for ($i = 0; $i < $length; $i++) {
             call_user_func(array($this, $this->variablesCallablesMap[$variablesOrder[$i]]), $request);
         }
+
+        foreach ($this->environmentVariables as $key => $value) {
+            putenv(sprintf('%s=%s', $key, $value));
+        }
     }
 
     private function setDefaultVariables()
@@ -94,10 +117,6 @@ final class LegacyApp
         $_POST = array();
         $_COOKIE = array();
         $_SERVER = array();
-
-        foreach ($this->environmentVariables as $key => $value) {
-            putenv(sprintf('%s=%s', $key, $value));
-        }
     }
 
     private function setEnvironmentVariables()
@@ -146,6 +165,7 @@ final class LegacyApp
     {
         $_SERVER = $request->getServer();
         $_SERVER['DOCUMENT_ROOT'] = $this->documentRoot . '/';
+        $_SERVER['SCRIPT_FILENAME'] = $this->getFrontendControllerScript($request);
         $_SERVER['SCRIPT_NAME'] = str_replace($this->documentRoot, '', $_SERVER['SCRIPT_FILENAME']);
 
         $parts = parse_url($request->getUri());
@@ -163,33 +183,10 @@ final class LegacyApp
         }
     }
 
-    private function runBootstrapScripts()
+    private function bootstrapApp()
     {
         foreach ($this->bootstrapScripts as $bootstrapScript) {
             require_once $bootstrapScript;
         }
-    }
-
-    private function setMapping()
-    {
-        if (count($this->mappingClasses) > 0) {
-            spl_autoload_register(array($this, 'loadClass'), true, true);
-        }
-    }
-
-    /**
-     * @param string $className
-     *
-     * @return bool
-     */
-    private function loadClass($className)
-    {
-        if (array_key_exists($className, $this->mappingClasses)) {
-            require_once $this->mappingClasses[$className];
-
-            return true;
-        }
-
-        return false;
     }
 }

@@ -30,13 +30,15 @@ final class DriverFactory extends ConfigurableDriverFactory
      */
     public function buildDriver(array $config)
     {
-        $legacyAppBuilder = new LegacyAppBuilder($config[self::DOCUMENT_ROOT_KEY]);
+        $legacyAppBuilder = new LegacyAppBuilder(
+            $config[self::DOCUMENT_ROOT_KEY],
+            $this->composerRouteCollection($config[self::CONTROLLER_KEY])
+        );
         $legacyAppBuilder->addEnvironmentVariables($config[self::ENVIRONMENT_KEY]);
         $legacyAppBuilder->addBootstrapScripts($config[self::BOOTSTRAP_KEY]);
-        $legacyAppBuilder->addMappingClasses($config[self::MAPPING_KEY]);
 
         return new Definition('Behat\Mink\Driver\BrowserKitDriver', array(
-            $this->buildClient($this->composerRouteCollection($config[self::CONTROLLER_KEY]), $legacyAppBuilder),
+            $this->buildClient($legacyAppBuilder),
             '%mink.base_url%',
         ));
     }
@@ -69,17 +71,15 @@ final class DriverFactory extends ConfigurableDriverFactory
     }
 
     /**
-     * @param RouteCollection  $controllers
      * @param LegacyAppBuilder $legacyAppBuilder
      *
      * @return Definition
      */
-    private function buildClient(RouteCollection $controllers, LegacyAppBuilder $legacyAppBuilder)
+    private function buildClient(LegacyAppBuilder $legacyAppBuilder)
     {
         return new Definition('carlosV2\LegacyDriver\Client', array(
-            $this->buildSerializer(),
-            $controllers,
-            $legacyAppBuilder
+            $legacyAppBuilder,
+            $this->buildSerializer()
         ));
     }
 

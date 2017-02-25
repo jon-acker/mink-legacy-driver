@@ -26,7 +26,6 @@ abstract class ConfigurableDriverFactory implements DriverFactory
                 ->append($this->getControllerConfiguration())
                 ->append($this->getEnvironmentConfiguration())
                 ->append($this->getBootstrapConfiguration())
-                ->append($this->getMappingConfiguration())
             ->end()
         ;
     }
@@ -150,31 +149,6 @@ abstract class ConfigurableDriverFactory implements DriverFactory
                         return !is_file($file);
                     })
                     ->thenInvalid('Bootstrap file is not found. Please provide an existing file.')
-                ->end()
-            ->end()
-        ;
-    }
-
-    /**
-     * @return NodeDefinition
-     */
-    private function getMappingConfiguration()
-    {
-        $node = new ArrayNodeDefinition(self::MAPPING_KEY);
-
-        return $node
-            ->useAttributeAsKey('classname')
-            ->prototype('scalar')
-                ->beforeNormalization()
-                    ->always(function ($file) {
-                        return realpath($file);
-                    })
-                ->end()
-                ->validate()
-                    ->ifTrue(function ($file) {
-                        return !is_file($file);
-                    })
-                    ->thenInvalid('Replacement file not found. Please provide an existing file.')
                 ->end()
             ->end()
         ;
