@@ -5,8 +5,7 @@ with the best practices in mind or they are too old to support them.
 
 [![License](https://poser.pugx.org/carlosv2/mink-legacy-driver/license)](https://packagist.org/packages/carlosv2/mink-legacy-driver)
 [![Build Status](https://travis-ci.org/carlosV2/mink-legacy-driver.svg?branch=master)](https://travis-ci.org/carlosV2/mink-legacy-driver)
-
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/500011c2-4635-4827-b00e-c253b3502171/mini.png)](https://insight.sensiolabs.com/projects/500011c2-4635-4827-b00e-c253b3502171)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/d57221b5-9f59-4a79-bc1b-07d578f79832/mini.png)](https://insight.sensiolabs.com/projects/d57221b5-9f59-4a79-bc1b-07d578f79832)
 
 ## Why?
 
