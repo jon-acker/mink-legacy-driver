@@ -8,6 +8,7 @@ use Symfony\Component\BrowserKit\Client as BrowserKitClient;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
 final class Client extends BrowserKitClient
@@ -61,14 +62,11 @@ final class Client extends BrowserKitClient
      */
     private function composeCommand(Request $request)
     {
-        $binary = $_SERVER['_'];
-        if (php_sapi_name() !== 'cgi-fcgi') {
-            $binary .= '-cgi';
-        }
+        $finder = new PhpExecutableFinder();
 
         return sprintf(
-            '%s %s %s %s %s',
-            $binary,
+            '%s-cgi %s %s %s %s',
+            $finder->find(),
             realpath(__DIR__ . self::RUNNER),
             RunCommand::NAME,
             $this->serializer->serialize($request),

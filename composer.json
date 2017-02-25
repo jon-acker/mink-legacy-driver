@@ -1,6 +1,6 @@
 {
     "name": "carlosv2/mink-legacy-driver",
-    "description": "Driver for Mink/Behat providing direct driver any php app",
+    "description": "Driver for Mink/Behat providing a bridge for legacy applications",
     "license": "MIT",
     "authors": [
         {

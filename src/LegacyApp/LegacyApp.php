@@ -10,17 +10,6 @@ use Symfony\Component\Routing\RouteCollection;
 final class LegacyApp
 {
     /**
-     * @var array
-     */
-    private $variablesCallablesMap = array(
-        'E' => 'setEnvironmentVariables',
-        'G' => 'setGetVariables',
-        'P' => 'setPostVariables',
-        'C' => 'setCookieVariables',
-        'S' => 'setServerVariables'
-    );
-
-    /**
      * @var string
      */
     private $documentRoot;
@@ -101,7 +90,23 @@ final class LegacyApp
         $this->setDefaultVariables();
         $length = strlen($variablesOrder);
         for ($i = 0; $i < $length; $i++) {
-            call_user_func(array($this, $this->variablesCallablesMap[$variablesOrder[$i]]), $request);
+            switch ($variablesOrder[$i]) {
+                case 'E':
+                    $this->setEnvironmentVariables();
+                    break;
+                case 'G':
+                    $this->setGetVariables($request);
+                    break;
+                case 'P':
+                    $this->setPostVariables($request);
+                    break;
+                case 'C':
+                    $this->setCookieVariables($request);
+                    break;
+                case 'S':
+                    $this->setServerVariables($request);
+                    break;
+            };
         }
 
         foreach ($this->environmentVariables as $key => $value) {
