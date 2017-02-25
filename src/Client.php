@@ -6,6 +6,7 @@ use carlosV2\LegacyDriver\LegacyApp\LegacyAppBuilder;
 use carlosV2\LegacyDriver\Runner\RunCommand;
 use Symfony\Component\BrowserKit\Client as BrowserKitClient;
 use Symfony\Component\BrowserKit\Request;
+use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -48,7 +49,7 @@ final class Client extends BrowserKitClient
             throw new ProcessFailedException($process);
         }
 
-        return HttpParser::createResponseFrom($process->getOutput());
+        return $this->parseResponse($process->getOutput());
     }
 
     /**
@@ -72,6 +73,26 @@ final class Client extends BrowserKitClient
             RunCommand::NAME,
             $this->serializer->serialize($request),
             $this->serializer->serialize($this->legacyAppBuilder)
+        );
+    }
+
+    /**
+     * @param string $message
+     *
+     * @return Response
+     */
+    private function parseResponse($message)
+    {
+        $message = preg_replace('/^Status:/', 'HTTP/1.1', $message, 1);
+        if (strpos($message, 'HTTP/1.1') !== 0) {
+            $message = "HTTP/1.1 200 OK\r\n" . $message;
+        }
+
+        $response = \RingCentral\Psr7\parse_response($message);
+        return new Response(
+            $response->getBody()->getContents(),
+            $response->getStatusCode(),
+            $response->getHeaders()
         );
     }
 }
