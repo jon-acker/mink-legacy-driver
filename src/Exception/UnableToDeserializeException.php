@@ -2,7 +2,9 @@
 
 namespace carlosV2\LegacyDriver\Exception;
 
-final class UnableToDeserialize extends \RuntimeException
+use RuntimeException;
+
+final class UnableToDeserializeException extends RuntimeException
 {
     /**
      * @param string $serializedData

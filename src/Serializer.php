@@ -2,7 +2,7 @@
 
 namespace carlosV2\LegacyDriver;
 
-use carlosV2\LegacyDriver\Exception\UnableToDeserialize;
+use carlosV2\LegacyDriver\Exception\UnableToDeserializeException;
 
 final class Serializer
 {
@@ -21,18 +21,18 @@ final class Serializer
      *
      * @return mixed
      *
-     * @throws UnableToDeserialize
+     * @throws UnableToDeserializeException
      */
     public function deserialize($encodedData)
     {
         $serializedData = base64_decode($encodedData);
         if ($serializedData === false) {
-            throw new UnableToDeserialize($encodedData);
+            throw new UnableToDeserializeException($encodedData);
         }
 
         $data = @unserialize($serializedData);
         if ($data === false) {
-            throw new UnableToDeserialize($encodedData);
+            throw new UnableToDeserializeException($encodedData);
         }
 
         return $data;

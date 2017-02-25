@@ -2,13 +2,14 @@
 
 namespace carlosV2\LegacyDriver;
 
+use carlosV2\LegacyDriver\Exception\PhpCgiExecutableNotFoundException;
 use carlosV2\LegacyDriver\LegacyApp\LegacyAppBuilder;
 use carlosV2\LegacyDriver\Runner\RunCommand;
 use Symfony\Component\BrowserKit\Client as BrowserKitClient;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\PhpExecutableFinder;
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 final class Client extends BrowserKitClient
@@ -62,16 +63,28 @@ final class Client extends BrowserKitClient
      */
     private function composeCommand(Request $request)
     {
-        $finder = new PhpExecutableFinder();
-
         return sprintf(
-            '%s-cgi %s %s %s %s',
-            $finder->find(),
+            '%s %s %s %s %s',
+            $this->findPhpCgiBinary(),
             realpath(__DIR__ . self::RUNNER),
             RunCommand::NAME,
             $this->serializer->serialize($request),
             $this->serializer->serialize($this->legacyAppBuilder)
         );
+    }
+
+    /**
+     * @return string
+     */
+    private function findPhpCgiBinary()
+    {
+        $finder = new ExecutableFinder();
+
+        if ($binary = $finder->find('php-cgi')) {
+            return $binary;
+        }
+
+        throw new PhpCgiExecutableNotFoundException();
     }
 
     /**
