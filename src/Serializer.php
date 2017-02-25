@@ -25,7 +25,7 @@ final class Serializer
      */
     public function deserialize($encodedData)
     {
-        $serializedData = base64_decode($encodedData);
+        $serializedData = base64_decode($encodedData, true);
         if ($serializedData === false) {
             throw new UnableToDeserializeException($encodedData);
         }

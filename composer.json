@@ -29,7 +29,8 @@
     },
     "require-dev": {
         "symfony/filesystem": "^2.8",
-        "symfony/yaml": "^2.8"
+        "symfony/yaml": "^2.8",
+        "phpspec/phpspec": "^2.5"
     },
     "extra": {
         "branch-alias": {
