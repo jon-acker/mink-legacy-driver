@@ -46,16 +46,21 @@ default:
 Where:
 
 - `environment`: Key/value array containing the environment variables. For example:
+
   ```yaml
   environment:
     variable: value
     env: prod
   ```
+
 - `controller`: Location of the frontend controller. For example:
+
   ```yaml
   controller: path/to/the/controller.php
   ```
+
   Alternatively you can supply an array of frontend controllers. For example:
+
   ```yaml
   controller:
     - path: /uri/to/match
@@ -63,8 +68,10 @@ Where:
     - path: /uri/to/another
       file: another/path/to/match.php    
   ```
+
   The controllers key configures the `symfony/routing` component underneath. As a result, you can also
   add the `methods` and `requirements` keys. For example:
+
   ```yaml
   controller:
     - path: /item/{id}
@@ -73,15 +80,21 @@ Where:
       requirements:
         id: \d+
   ```
+
 - `document_root`: Location of the document root. For example:
+
   ```yaml
   document_root: path/to/the/document/root/
   ```
+
 - `bootstrap`: Location of the bootstrap file to execute before every request. For example:
+
   ```yaml
   bootstrap: path/to/the/bootstrap/file.php
   ```
+
   Alternatively you can supply multiple files to be executed before every request. For example:
+
   ```yaml
   bootstrap:
     - path/to/the/bootstrap/file.php
