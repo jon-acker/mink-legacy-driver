@@ -17,6 +17,9 @@
     "autoload": {
         "psr-4": { "carlosV2\\LegacyDriver\\": "src/" }
     },
+    "autoload-dev": {
+        "psr-4": { "spec\\carlosV2\\LegacyDriver\\" : "spec/" }
+    },
     "require": {
         "php": ">=5.3",
         "behat/behat": "^3.3",

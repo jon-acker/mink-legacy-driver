@@ -1,0 +1,4 @@
+suites:
+  mink_legacy_driver_suite:
+    namespace: carlosV2\LegacyDriver
+    psr4_prefix: carlosV2\LegacyDriver
