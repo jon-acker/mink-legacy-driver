@@ -33,7 +33,10 @@
     "require-dev": {
         "symfony/filesystem": "^2.8",
         "symfony/yaml": "^2.8",
-        "phpspec/phpspec": "^2.5"
+        "phpspec/phpspec": "^3.2"
+    },
+    "config": {
+        "bin-dir": "bin"
     },
     "extra": {
         "branch-alias": {
