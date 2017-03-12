@@ -15,8 +15,6 @@ class Controllers
      */
     private $routeCollection;
 
-    private $controllers = [];
-
     /**
      * @param RouteCollection $routeCollection
      */
