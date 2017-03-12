@@ -41,7 +41,7 @@ final class Client extends BrowserKitClient
     /**
      * {@inheritdoc}
      */
-    protected function doRequest(Request $request)
+    protected function doRequest($request)
     {
         $process = new Process($this->composeCommand($request));
         $process->setInput($request->getContent());
@@ -57,11 +57,11 @@ final class Client extends BrowserKitClient
     /**
      * Compose the command to run with the same PHP binary that was used to run Behat
      *
-     * @param Request $request
+     * @param object $request
      *
      * @return string
      */
-    private function composeCommand(Request $request)
+    private function composeCommand($request)
     {
         return sprintf(
             '%s %s %s %s %s',
