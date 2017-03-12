@@ -172,6 +172,7 @@ final class LegacyApp
         $_SERVER['DOCUMENT_ROOT'] = $this->documentRoot . '/';
         $_SERVER['SCRIPT_FILENAME'] = $this->getFrontendControllerScript($request);
         $_SERVER['SCRIPT_NAME'] = str_replace($this->documentRoot, '', $_SERVER['SCRIPT_FILENAME']);
+        $_SERVER['PHP_SELF'] = $_SERVER['SCRIPT_NAME'];
 
         $parts = parse_url($request->getUri());
         $_SERVER['REQUEST_SCHEME'] = strtolower($parts['scheme']);
