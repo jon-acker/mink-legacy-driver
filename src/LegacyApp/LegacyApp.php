@@ -3,8 +3,6 @@
 namespace carlosV2\LegacyDriver\LegacyApp;
 
 use Symfony\Component\BrowserKit\Request;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 
 final class LegacyApp
@@ -30,14 +28,14 @@ final class LegacyApp
     private $bootstrapScripts;
 
     /**
-     * @param string          $documentRoot
-     * @param RouteCollection $controllers
-     * @param string[]        $environmentVariables
-     * @param string[]        $bootstrapScripts
+     * @param string $documentRoot
+     * @param Controllers $controllers
+     * @param string[] $environmentVariables
+     * @param string[] $bootstrapScripts
      */
     public function __construct(
         $documentRoot,
-        RouteCollection $controllers,
+        Controllers $controllers,
         array $environmentVariables,
         array $bootstrapScripts
     ) {
@@ -52,32 +50,11 @@ final class LegacyApp
      */
     public function handle(Request $request)
     {
-        $controller = $this->getFrontendControllerScript($request);
-
-        chdir(dirname($controller));
         $this->setVariables($request);
 
-        $this->bootstrapScripts[] = $controller;
-        $this->bootstrapApp();
-    }
+        $this->bootstrapScripts[] = $this->controllers->getFront($request);
 
-    /**
-     * @param Request $request
-     *
-     * @return string
-     */
-    private function getFrontendControllerScript(Request $request)
-    {
-        $parts = parse_url($request->getUri());
-        $matcher = new UrlMatcher(
-            $this->controllers,
-            new RequestContext(
-                '/',
-                strtoupper($request->getMethod())
-            )
-        );
-        $parameters = $matcher->match($parts['path']);
-        return $parameters['file'];
+        $this->bootstrapApp();
     }
 
     /**
@@ -135,7 +112,10 @@ final class LegacyApp
     private function setGetVariables(Request $request)
     {
         if (strtoupper($request->getMethod()) === 'GET') {
-            $_GET = $request->getParameters();
+            $parts = parse_url($request->getUri());
+            if (isset($parts['query'])) {
+                parse_str($parts['query'], $_GET);
+            }
         }
 
         $_REQUEST = array_merge($_REQUEST, $_GET);
@@ -170,7 +150,7 @@ final class LegacyApp
     {
         $_SERVER = $request->getServer();
         $_SERVER['DOCUMENT_ROOT'] = $this->documentRoot . '/';
-        $_SERVER['SCRIPT_FILENAME'] = $this->getFrontendControllerScript($request);
+        $_SERVER['SCRIPT_FILENAME'] = $this->controllers->getFront($request);
         $_SERVER['SCRIPT_NAME'] = str_replace($this->documentRoot, '', $_SERVER['SCRIPT_FILENAME']);
         $_SERVER['PHP_SELF'] = $_SERVER['SCRIPT_NAME'];
 
@@ -184,15 +164,13 @@ final class LegacyApp
             $_SERVER['QUERY_STRING'] = $parts['query'];
         }
 
-        if ($_SERVER['HTTP_HOST'] === 'https') {
+        if ($_SERVER['REQUEST_SCHEME'] === 'https') {
             $_SERVER['HTTPS'] = 'on';
         }
     }
 
     private function bootstrapApp()
     {
-        foreach ($this->bootstrapScripts as $bootstrapScript) {
-            require_once $bootstrapScript;
-        }
+        array_map(function(Script $script) { $script->load(); }, $this->bootstrapScripts);
     }
 }

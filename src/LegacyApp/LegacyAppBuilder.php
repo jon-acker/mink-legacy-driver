@@ -2,8 +2,6 @@
 
 namespace carlosV2\LegacyDriver\LegacyApp;
 
-use Symfony\Component\Routing\RouteCollection;
-
 final class LegacyAppBuilder
 {
     /**
@@ -12,7 +10,7 @@ final class LegacyAppBuilder
     private $documentRoot;
 
     /**
-     * @var RouteCollection
+     * @var Controllers
      */
     private $controllers;
 
@@ -27,15 +25,14 @@ final class LegacyAppBuilder
     private $bootstrapScripts;
 
     /**
-     * @param string          $documentRoot
-     * @param RouteCollection $controllers
+     * @param string $documentRoot
+     * @param Controllers $controllers
      */
-    public function __construct($documentRoot, RouteCollection $controllers)
+    public function __construct($documentRoot, Controllers $controllers)
     {
         $this->documentRoot = $documentRoot;
         $this->controllers = $controllers;
         $this->environmentVariables = array();
-        $this->bootstrapScripts = array();
     }
 
     /**
@@ -51,7 +48,9 @@ final class LegacyAppBuilder
      */
     public function addBootstrapScripts(array $bootstrapScripts)
     {
-        $this->bootstrapScripts = $bootstrapScripts;
+        $this->bootstrapScripts = array_map(function($script) {
+            return new Script($script);
+        }, $bootstrapScripts);
     }
 
     /**

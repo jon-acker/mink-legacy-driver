@@ -41,7 +41,7 @@ final class Client extends BrowserKitClient
     /**
      * {@inheritdoc}
      */
-    protected function doRequest($request)
+    protected function doRequest(Request $request)
     {
         $process = new Process($this->composeCommand($request));
         $process->setInput($request->getContent());

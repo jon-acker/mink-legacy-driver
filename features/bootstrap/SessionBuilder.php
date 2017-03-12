@@ -3,6 +3,7 @@
 use Behat\Mink\Driver\BrowserKitDriver;
 use Behat\Mink\Session;
 use carlosV2\LegacyDriver\Client;
+use carlosV2\LegacyDriver\LegacyApp\Controllers;
 use carlosV2\LegacyDriver\LegacyApp\LegacyAppBuilder;
 use carlosV2\LegacyDriver\Serializer;
 use Symfony\Component\Routing\Route;
@@ -16,7 +17,7 @@ class SessionBuilder
     private $documentRoot;
 
     /**
-     * @var RouteCollection
+     * @var Controllers
      */
     private $controllers;
 
@@ -36,7 +37,7 @@ class SessionBuilder
     public function __construct($documentRoot)
     {
         $this->documentRoot = $documentRoot;
-        $this->controllers = new RouteCollection();
+        $this->controllers = new Controllers(new RouteCollection());
         $this->environment = array();
         $this->bootstrapScripts = array();
     }
@@ -46,7 +47,7 @@ class SessionBuilder
      */
     public function addController(Route $route)
     {
-        $this->controllers->add(md5(serialize($route)), $route);
+        $this->controllers->add($route);
     }
 
     /**

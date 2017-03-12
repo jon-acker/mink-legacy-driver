@@ -1,5 +1,6 @@
 <?php
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Mink\Session;
@@ -120,6 +121,7 @@ class FeatureContext implements Context
 
     /**
      * @When /^I make a(?: "([^"]*)")? request to "([^"]*)"$/
+     * @When /^I make a(?: "([^"]*)")? request to "([^"]*)" with no parameters$/
      */
     public function iMakeARequestTo($method, $path)
     {
@@ -159,5 +161,17 @@ class FeatureContext implements Context
     public function theFileIsConfiguredToBootstrapWithTheApplication($file)
     {
         $this->sessionBuilder->addBootstrapScript($this->directory . '/' . $file);
+    }
+
+    /**
+     * @Then the page content should include the error :errorMessage
+     */
+    public function thePageContentShouldIncludeTheError($errorMessage)
+    {
+        $pageContent = $this->session->getPage()->getContent();
+
+        if (strpos($pageContent, $errorMessage) === false) {
+            throw new RuntimeException(sprintf("Expected page contain error with: %s, page content was:\n%s", $errorMessage, $pageContent));
+        }
     }
 }
